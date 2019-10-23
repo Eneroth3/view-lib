@@ -1,59 +1,73 @@
-# TODO: Move to community lib?
-
 # View and Camera related functionality.
+#
+# Wraps much of SketchUp's internal complexity, such as field of view
+# sometimes being measured vertically and sometimes horizontally, and handling
+# of explicit vs implicit aspect ratios.
 module View
-  # Get view's vertical field of view in degrees. Honors any explicitly set
-  # aspect ratio.
+  # Check if view has an explicitly set aspect ratio, or if it is implicitly
+  # taken from the viewport ratio. When explicitly set gray bars covers the
+  # remaining sections of the viewport.
   #
   # @param view [Sketchup::View]
   #
   # @return [Float]
+  def self.explicit_aspect_ratio?(view = Sketchup.active_model.active_view)
+    view.camera.aspect_ratio != 0
+  end
+
+  # Get the vertical field of view.
+  # Angle measured within gray bars if an explicit aspect ratio is set.
+  #
+  # @param view [Sketchup::View]
+  #
+  # @return [Float] Angle in degrees
   def self.fov_v(view = Sketchup.active_model.active_view)
     return view.camera.fov if view.camera.fov_is_height?
 
     frustrum_ratio(view.camera.fov, 1 / current_aspect_ratio(view))
   end
 
-  # Get view's horizontal field of view in degrees. Honors any explicitly set
-  # aspect ratio.
+  # Get the horizontal field of view.
+  # Angle measured within gray bars if an explicit aspect ratio is set.
   #
   # @param view [Sketchup::View]
   #
-  # @return [Float]
+  # @return [Float] Angle in degrees
   def self.fov_h(view = Sketchup.active_model.active_view)
     return view.camera.fov unless view.camera.fov_is_height?
 
     frustrum_ratio(view.camera.fov, current_aspect_ratio(view))
   end
 
-  # Get the view's vertical field of view in degrees, including the area covered
-  # by any bars if there is an explicitly set aspect ratio.
+  # Get the vertical field of view.
+  # Angle measured including gray bars if an explicit aspect ratio is set.
   #
   # @param view [Sketchup::View]
   #
-  # @return [Float]
+  # @return [Float] Angle in degrees
   def self.full_fov_v(view = Sketchup.active_model.active_view)
     # Cap aspect ratio ratio when bars should not be taken into account.
     frustrum_ratio(fov_v(view), [aspect_ratio_ratio(view), 1].max)
   end
 
-  # Get the view's horisontal field of view in degrees, including the area covered
-  # by any bars if there is an explicitly set aspect ratio.
+  # Get the horizontal field of view.
+  # Angle measured including gray bars if an explicit aspect ratio is set.
   #
   # @param view [Sketchup::View]
   #
-  # @return [Float]
+  # @return [Float] Angle in degrees
   def self.full_fov_h(view = Sketchup.active_model.active_view)
     # Cap aspect ratio ratio when bars should not be taken into account.
     frustrum_ratio(fov_h(view), [1 / aspect_ratio_ratio(view), 1].max)
   end
 
-  # Set the view's vertical field of view in degrees.
-  # If an explicit aspect ratio is set, set the field of view within the bars.
+  # Set the vertical field of view.
+  # Angle measured within gray bars if an explicit aspect ratio is set.
   #
+  # @param [Float] Angle in degrees
   # @param view [Sketchup::View]
   #
-  # @return [Float]
+  # @return [void]
   def self.set_fov_v(fov, view = Sketchup.active_model.active_view)
     if view.camera.fov_is_height?
       view.camera.fov = fov
@@ -62,12 +76,13 @@ module View
     end
   end
 
-  # Set the view's horizontal field of view in degrees.
-  # If an explicit aspect ratio is set, set the field of view within the bars.
+  # Set the horizontal field of view.
+  # Angle measured within gray bars if an explicit aspect ratio is set.
   #
+  # @param [Float] Angle in degrees
   # @param view [Sketchup::View]
   #
-  # @return [Float]
+  # @return [void]
   def self.set_fov_h(fov, view = Sketchup.active_model.active_view)
     if view.camera.fov_is_height?
       view.camera.fov = frustrum_ratio(fov, 1 / current_aspect_ratio)
