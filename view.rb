@@ -26,6 +26,28 @@ module View
     frustrum_ratio(view.camera.fov, 1 / current_aspect_ratio(view))
   end
 
+  # Get the view's vertical field of view in degrees, including the area covered
+  # by any bars if there is an explicitly set aspect ratio.
+  #
+  # @param view [Sketchup::View]
+  #
+  # @return [Float]
+  def self.full_fov_v(view = Sketchup.active_model.active_view)
+    # Cap aspect ratio ratio when bars should not be taken into account.
+    frustrum_ratio(fov_h(view), [aspect_ratio_ratio(view), 1].max)
+  end
+
+  # Get the view's horisontal field of view in degrees, including the area covered
+  # by any bars if there is an explicitly set aspect ratio.
+  #
+  # @param view [Sketchup::View]
+  #
+  # @return [Float]
+  def self.full_fov_h(view = Sketchup.active_model.active_view)
+    # Cap aspect ratio ratio when bars should not be taken into account.
+    frustrum_ratio(fov_v(view), [1 / aspect_ratio_ratio(view), 1].max)
+  end
+
   # Set aspect ratio by covering parts of the screen with gray bars.
   # Sets the aspect ratio without visually changing the projection on screen.
   #
@@ -78,6 +100,17 @@ module View
     return view.camera.aspect_ratio unless view.camera.aspect_ratio == 0
 
     vp_aspect_ratio(view)
+  end
+
+  # Get ratio between the explicit aspect ratio and the viewport aspect ratio.
+  # When the gray aspect ratio bars are horizontal, this value is larger than 1
+  # and when they are vertical this value is smaller than 1.
+  #
+  # @param view [Sketchup::View]
+  #
+  # @return [Float]
+  def self.aspect_ratio_ratio(view = Sketchup.active_model.active_view)
+    current_aspect_ratio(view) / vp_aspect_ratio(view)
   end
 
   # Private
