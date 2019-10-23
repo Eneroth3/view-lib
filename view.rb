@@ -11,7 +11,7 @@ module View
   def self.fov_v(view = Sketchup.active_model.active_view)
     return view.camera.fov unless view.camera.fov_is_height?
 
-    frustrum_ratio(view.camera.fov.degrees, current_aspect_ratio(view))
+    frustrum_ratio(view.camera.fov, current_aspect_ratio(view))
   end
 
   # Get view's horizontal field of view in degrees. Honors any explicitly set
@@ -23,7 +23,7 @@ module View
   def self.fov_h(view = Sketchup.active_model.active_view)
     return view.camera.fov if view.camera.fov_is_height?
 
-    frustrum_ratio(view.camera.fov.degrees, 1 / current_aspect_ratio(view))
+    frustrum_ratio(view.camera.fov, 1 / current_aspect_ratio(view))
   end
 
   # Set aspect ratio by covering parts of the screen with gray bars.
@@ -90,7 +90,7 @@ module View
   #
   # @return [Angle] Angle in degrees.
   def self.frustrum_ratio(angle, ratio)
-    Math.atan(Math.tan(angle / 2) * ratio).radians * 2
+    Math.atan(Math.tan(angle.degrees / 2) * ratio).radians * 2
   end
   private_class_method :frustrum_ratio
 end
