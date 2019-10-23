@@ -24,7 +24,7 @@ module View
   def self.fov_v(view = Sketchup.active_model.active_view)
     return view.camera.fov if view.camera.fov_is_height?
 
-    frustrum_ratio(view.camera.fov, 1 / current_aspect_ratio(view))
+    frustrum_ratio(view.camera.fov, 1 / aspect_ratio(view))
   end
 
   # Get the horizontal field of view.
@@ -36,7 +36,7 @@ module View
   def self.fov_h(view = Sketchup.active_model.active_view)
     return view.camera.fov unless view.camera.fov_is_height?
 
-    frustrum_ratio(view.camera.fov, current_aspect_ratio(view))
+    frustrum_ratio(view.camera.fov, aspect_ratio(view))
   end
 
   # Get the vertical field of view.
@@ -72,7 +72,7 @@ module View
     if view.camera.fov_is_height?
       view.camera.fov = fov
     else
-      view.camera.fov = frustrum_ratio(fov, current_aspect_ratio)
+      view.camera.fov = frustrum_ratio(fov, aspect_ratio)
     end
   end
 
@@ -85,7 +85,7 @@ module View
   # @return [void]
   def self.set_fov_h(fov, view = Sketchup.active_model.active_view)
     if view.camera.fov_is_height?
-      view.camera.fov = frustrum_ratio(fov, 1 / current_aspect_ratio)
+      view.camera.fov = frustrum_ratio(fov, 1 / aspect_ratio)
     else
       view.camera.fov = fov
     end
@@ -133,13 +133,14 @@ module View
     view.vpwidth / view.vpheight.to_f
   end
 
-  # Get the aspect ratio of the view. If an aspect ratio is explicitly set, this
-  # ratio is returned.
+  # Get the aspect ratio.
+  # If an aspect ratio is explicitly set, return it. Otherwise return viewport
+  # aspect ratio.
   #
   # @param view [Sketchup::View]
   #
   # @return [Float]
-  def self.current_aspect_ratio(view = Sketchup.active_model.active_view)
+  def self.aspect_ratio(view = Sketchup.active_model.active_view)
     return view.camera.aspect_ratio unless view.camera.aspect_ratio == 0
 
     vp_aspect_ratio(view)
@@ -153,7 +154,7 @@ module View
   #
   # @return [Float]
   def self.aspect_ratio_ratio(view = Sketchup.active_model.active_view)
-    current_aspect_ratio(view) / vp_aspect_ratio(view)
+    aspect_ratio(view) / vp_aspect_ratio(view)
   end
 
   # Private
