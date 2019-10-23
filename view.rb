@@ -48,6 +48,34 @@ module View
     frustrum_ratio(fov_h(view), [1 / aspect_ratio_ratio(view), 1].max)
   end
 
+  # Set the view's vertical field of view in degrees.
+  # If an explicit aspect ratio is set, set the field of view within the bars.
+  #
+  # @param view [Sketchup::View]
+  #
+  # @return [Float]
+  def self.set_fov_v(fov, view = Sketchup.active_model.active_view)
+    if view.camera.fov_is_height?
+      view.camera.fov = fov
+    else
+      view.camera.fov = frustrum_ratio(fov, current_aspect_ratio)
+    end
+  end
+
+  # Set the view's horizontal field of view in degrees.
+  # If an explicit aspect ratio is set, set the field of view within the bars.
+  #
+  # @param view [Sketchup::View]
+  #
+  # @return [Float]
+  def self.set_fov_h(fov, view = Sketchup.active_model.active_view)
+    if view.camera.fov_is_height?
+      view.camera.fov = frustrum_ratio(fov, 1 / current_aspect_ratio)
+    else
+      view.camera.fov = fov
+    end
+  end
+
   # Set aspect ratio by covering parts of the screen with gray bars.
   # Sets the aspect ratio without visually changing the projection on screen.
   #
