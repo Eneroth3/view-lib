@@ -191,6 +191,50 @@ module View
     set_fov_v(frustrum_ratio(fov, [1 / aspect_ratio_ratio(view), 1].min), view)
   end
 
+  # Set the height of a parallel projection camera.
+  # Length measured including gray bars if an explicit aspect ratio is set.
+  #
+  # @param height [Length]
+  # @param view [Sketchup::View]
+  #
+  # @return [void]
+  def self.set_full_height(height, view = Sketchup.active_model.active_view)
+    view.camera.height = height
+  end
+
+  # Set the width of a parallel projection camera.
+  # Length measured including gray bars if an explicit aspect ratio is set.
+  #
+  # @param width [Length]
+  # @param view [Sketchup::View]
+  #
+  # @return [void]
+  def self.set_full_width(width, view = Sketchup.active_model.active_view)
+    set_full_height(width / vp_aspect_ratio, view)
+  end
+
+  # Set the height of a parallel projection camera.
+  # Length measured within gray bars if an explicit aspect ratio is set.
+  #
+  # @param height [Length]
+  # @param view [Sketchup::View]
+  #
+  # @return [void]
+  def self.set_height(height, view = Sketchup.active_model.active_view)
+    set_full_height(height * [aspect_ratio_ratio(view), 1].max, view)
+  end
+
+  # Set the width of a parallel projection camera.
+  # Length measured within gray bars if an explicit aspect ratio is set.
+  #
+  # @param width [Length]
+  # @param view [Sketchup::View]
+  #
+  # @return [void]
+  def self.set_width(width, view = Sketchup.active_model.active_view)
+    set_full_width(width * [1 / aspect_ratio_ratio(view), 1].max, view)
+  end
+
   # Get aspect ratio of viewport.
   #
   # @param view [Sketchup::View]
