@@ -85,6 +85,36 @@ module View
     frustrum_ratio(fov_v(view), [aspect_ratio_ratio(view), 1].max)
   end
 
+  # Get the height of a parallel projection camera.
+  # Length measured including gray bars if an explicit aspect ratio is set.
+  #
+  # @param view [Sketchup::View]
+  #
+  # @return [Length]
+  def self.full_height(view = Sketchup.active_model.active_view)
+    view.camera.height.to_l
+  end
+
+  # Get the width of a parallel projection camera.
+  # Length measured including gray bars if an explicit aspect ratio is set.
+  #
+  # @param view [Sketchup::View]
+  #
+  # @return [Length]
+  def self.full_width(view = Sketchup.active_model.active_view)
+    (full_height(view) * vp_aspect_ratio(view)).to_l
+  end
+
+  # Get the height of a parallel projection camera.
+  # Length measured within gray bars if an explicit aspect ratio is set.
+  #
+  # @param view [Sketchup::View]
+  #
+  # @return [Length]
+  def self.height(view = Sketchup.active_model.active_view)
+    (full_height(view) / [1, aspect_ratio_ratio(view)].max).to_l
+  end
+
   # Reset aspect ratio and remove gray bars from view.
   #
   # @param view [Sketchup::View]
@@ -102,9 +132,9 @@ module View
   #
   # @returns [void]
   def self.set_aspect_ratio(aspect_ratio, view = Sketchup.active_model.active_view)
-    fov = full_fov_v(view)
+    fov = full_fov_v(view) if view.camera.perspective?
     view.camera.aspect_ratio = aspect_ratio
-    set_full_fov_v(fov, view)
+    set_full_fov_v(fov, view) if view.camera.perspective?
   end
 
   # Set the horizontal field of view.
@@ -168,6 +198,16 @@ module View
   # @return [Float]
   def self.vp_aspect_ratio(view = Sketchup.active_model.active_view)
     view.vpwidth / view.vpheight.to_f
+  end
+
+  # Get the width of a parallel projection camera.
+  # Length measured within gray bars if an explicit aspect ratio is set.
+  #
+  # @param view [Sketchup::View]
+  #
+  # @return [Length]
+  def self.width(view = Sketchup.active_model.active_view)
+    (full_width(view) / [1, 1 / aspect_ratio_ratio(view)].max).to_l
   end
 
   # Private
