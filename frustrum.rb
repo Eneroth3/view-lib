@@ -3,6 +3,27 @@ require_relative "view.rb"
 # Functionality related to the camera frustrum.
 module Frustrum
   # Get planes for camera frustrum. Order is left, right, bottom and top.
+  # Planes are including gray bars if an explicit aspect ratio is set.
+  #
+  # @param view [Sketchup::View]
+  #
+  # @return [Array<(
+  #   Array<(Geom::Point3d, Geom::Vector3d)>,
+  #   Array<(Geom::Point3d, Geom::Vector3d)>,
+  #   Array<(Geom::Point3d, Geom::Vector3d)>,
+  #   Array<(Geom::Point3d, Geom::Vector3d)>
+  #   )]
+  def self.full_planes(view = Sketchup.active_model.active_view)
+    if view.camera.perspective?
+      perspective_planes(view.camera, View.full_fov_h(view) / 2,
+                         View.full_fov_v(view) / 2)
+    else
+      parallel_planes(view.camera, View.full_height(view) / 2,
+                      View.full_width(view) / 2)
+    end
+  end
+
+  # Get planes for camera frustrum. Order is left, right, bottom and top.
   # Planes are within gray bars if an explicit aspect ratio is set.
   #
   # @param view [Sketchup::View]
@@ -14,15 +35,17 @@ module Frustrum
   #   Array<(Geom::Point3d, Geom::Vector3d)>
   #   )]
   def self.planes(view = Sketchup.active_model.active_view)
-    view.camera.perspective? ? perspective_planes(view) : parallel_planes(view)
+    if view.camera.perspective?
+      perspective_planes(view.camera, View.fov_h(view) / 2,
+                         View.fov_v(view) / 2)
+    else
+      parallel_planes(view.camera, View.height(view) / 2, View.width(view) / 2)
+    end
   end
 
   # Private
 
-  def self.perspective_planes(view)
-    cam = view.camera
-    half_fov_h = View.fov_h(view) / 2
-    half_fov_v = View.fov_v(view) / 2
+  def self.perspective_planes(cam, half_fov_h, half_fov_v)
     [
       # xaxis = right.
       [cam.eye, rotate_vector(cam.xaxis.reverse, cam.eye, cam.up, half_fov_h)],
@@ -38,10 +61,7 @@ module Frustrum
   end
   private_class_method :rotate_vector
 
-  def self.parallel_planes(view)
-    cam = view.camera
-    half_width = View.width(view) / 2
-    half_height = View.height(view) / 2
+  def self.parallel_planes(cam, half_height, half_width)
     [
       # xaxis = right.
       [cam.eye.offset(cam.xaxis, -half_width), cam.xaxis.reverse],
