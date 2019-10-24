@@ -115,7 +115,7 @@ module View
     set_fov_h(frustrum_ratio(fov, [aspect_ratio_ratio(view), 1].min), view)
   end
 
-  # Set aspect ratio by covering parts of the screen with gray bars.
+  # Set aspect ratio by covering parts of the view with gray bars.
   # Sets the aspect ratio without visually changing the projection on screen.
   #
   # @param aspect_ratio [Float]
@@ -123,16 +123,9 @@ module View
   #
   # @returns [void]
   def self.set_aspect_ratio(aspect_ratio, view = Sketchup.active_model.active_view)
-    # Get current look
-    # Set new aspect ratio
-    # Adapt fov to visually match
-    
-    old_aspect_ratio = current_aspect_ratio
-    # have full_fov_v and full_fov_h getters?
-    # have full_fov_v and full_fov_h setters?
-    
-    # Is height or width going to change?
-    # In some cases both change!
+    fov = full_fov_v(view)
+    view.camera.aspect_ratio = aspect_ratio
+    set_full_fov_v(fov, view)
   end
 
   # Reset aspect ratio and remove gray bars from view.
