@@ -91,6 +91,30 @@ module View
     end
   end
 
+  # Set the vertical field of view.
+  # Angle measured including gray bars if an explicit aspect ratio is set.
+  #
+  # @param [Float] Angle in degrees
+  # @param view [Sketchup::View]
+  #
+  # @return [void]
+  def self.set_full_fov_v(fov, view = Sketchup.active_model.active_view)
+    # Cap aspect ratio ratio when bars should not be taken into account.
+    set_fov_v(frustrum_ratio(fov, [1 / aspect_ratio_ratio(view), 1].min), view)
+  end
+
+  # Set the horizontal field of view.
+  # Angle measured including gray bars if an explicit aspect ratio is set.
+  #
+  # @param [Float] Angle in degrees
+  # @param view [Sketchup::View]
+  #
+  # @return [void]
+  def self.set_full_fov_h(fov, view = Sketchup.active_model.active_view)
+    # Cap aspect ratio ratio when bars should not be taken into account.
+    set_fov_h(frustrum_ratio(fov, [aspect_ratio_ratio(view), 1].min), view)
+  end
+
   # Set aspect ratio by covering parts of the screen with gray bars.
   # Sets the aspect ratio without visually changing the projection on screen.
   #
