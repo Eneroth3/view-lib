@@ -137,10 +137,6 @@ module View
     set_aspect_ratio(0, view)
   end
 
-  def self.frustrum_planes
-
-  end
-
   # Get aspect ratio of viewport.
   #
   # @param view [Sketchup::View]
