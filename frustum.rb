@@ -2,8 +2,9 @@ require_relative "view.rb"
 
 # Functionality related to the camera frustum.
 module Frustum
-  # Get planes for camera frustum. Order is left, right, bottom and top.
+  # Get planes for camera frustum.
   # Planes are including gray bars if an explicit aspect ratio is set.
+  # Order is left, right, bottom and top.
   #
   # @param view [Sketchup::View]
   #
@@ -23,8 +24,9 @@ module Frustum
     end
   end
 
-  # Get planes for camera frustum. Order is left, right, bottom and top.
+  # Get planes for camera frustum.
   # Planes are within gray bars if an explicit aspect ratio is set.
+  # Order is left, right, bottom and top.
   #
   # @param view [Sketchup::View]
   #
