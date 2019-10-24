@@ -12,7 +12,7 @@ module View
   #
   # @return [Float]
   def self.aspect_ratio(view = Sketchup.active_model.active_view)
-    return view.camera.aspect_ratio unless view.camera.aspect_ratio == 0
+    return view.camera.aspect_ratio unless view.camera.aspect_ratio.zero?
 
     vp_aspect_ratio(view)
   end
@@ -44,7 +44,7 @@ module View
   #
   # @param view [Sketchup::View]
   #
-  # @return [Float] Angle in degrees
+  # @return [Float] Angle in degrees.
   def self.fov_h(view = Sketchup.active_model.active_view)
     return view.camera.fov unless view.camera.fov_is_height?
 
@@ -56,7 +56,7 @@ module View
   #
   # @param view [Sketchup::View]
   #
-  # @return [Float] Angle in degrees
+  # @return [Float] Angle in degrees.
   def self.fov_v(view = Sketchup.active_model.active_view)
     return view.camera.fov if view.camera.fov_is_height?
 
@@ -68,7 +68,7 @@ module View
   #
   # @param view [Sketchup::View]
   #
-  # @return [Float] Angle in degrees
+  # @return [Float] Angle in degrees.
   def self.full_fov_h(view = Sketchup.active_model.active_view)
     # Cap aspect ratio ratio when bars should not be taken into account.
     frustrum_ratio(fov_h(view), [1 / aspect_ratio_ratio(view), 1].max)
@@ -79,7 +79,7 @@ module View
   #
   # @param view [Sketchup::View]
   #
-  # @return [Float] Angle in degrees
+  # @return [Float] Angle in degrees.
   def self.full_fov_v(view = Sketchup.active_model.active_view)
     # Cap aspect ratio ratio when bars should not be taken into account.
     frustrum_ratio(fov_v(view), [aspect_ratio_ratio(view), 1].max)
@@ -119,7 +119,7 @@ module View
   #
   # @param view [Sketchup::View]
   #
-  # @returns [void]
+  # @return [void]
   def self.reset_aspect_ratio(view = Sketchup.active_model.active_view)
     set_aspect_ratio(0, view)
   end
@@ -130,8 +130,9 @@ module View
   # @param aspect_ratio [Float]
   # @param view [Sketchup::View]
   #
-  # @returns [void]
-  def self.set_aspect_ratio(aspect_ratio, view = Sketchup.active_model.active_view)
+  # @return [void]
+  def self.set_aspect_ratio(aspect_ratio,
+                            view = Sketchup.active_model.active_view)
     fov = full_fov_v(view) if view.camera.perspective?
     view.camera.aspect_ratio = aspect_ratio
     set_full_fov_v(fov, view) if view.camera.perspective?
@@ -140,37 +141,39 @@ module View
   # Set the horizontal field of view.
   # Angle measured within gray bars if an explicit aspect ratio is set.
   #
-  # @param [Float] Angle in degrees
+  # @param fov [Float] Angle in degrees
   # @param view [Sketchup::View]
   #
   # @return [void]
   def self.set_fov_h(fov, view = Sketchup.active_model.active_view)
-    if view.camera.fov_is_height?
-      view.camera.fov = frustrum_ratio(fov, 1 / aspect_ratio)
-    else
-      view.camera.fov = fov
-    end
+    view.camera.fov =
+      if view.camera.fov_is_height?
+        frustrum_ratio(fov, 1 / aspect_ratio)
+      else
+        fov
+      end
   end
 
   # Set the vertical field of view.
   # Angle measured within gray bars if an explicit aspect ratio is set.
   #
-  # @param [Float] Angle in degrees
+  # @param fov [Float] Angle in degrees.
   # @param view [Sketchup::View]
   #
   # @return [void]
   def self.set_fov_v(fov, view = Sketchup.active_model.active_view)
-    if view.camera.fov_is_height?
-      view.camera.fov = fov
-    else
-      view.camera.fov = frustrum_ratio(fov, aspect_ratio)
-    end
+    view.camera.fov =
+      if view.camera.fov_is_height?
+        fov
+      else
+        frustrum_ratio(fov, aspect_ratio)
+      end
   end
 
   # Set the horizontal field of view.
   # Angle measured including gray bars if an explicit aspect ratio is set.
   #
-  # @param [Float] Angle in degrees
+  # @param fov [Float] Angle in degrees.
   # @param view [Sketchup::View]
   #
   # @return [void]
@@ -182,7 +185,7 @@ module View
   # Set the vertical field of view.
   # Angle measured including gray bars if an explicit aspect ratio is set.
   #
-  # @param [Float] Angle in degrees
+  # @param fov [Float] Angle in degrees.
   # @param view [Sketchup::View]
   #
   # @return [void]
@@ -260,7 +263,6 @@ module View
   # ratio between.
   #
   # @param angle [Float] Angle in degrees.
-  # @param [Float]
   #
   # @return [Angle] Angle in degrees.
   def self.frustrum_ratio(angle, ratio)

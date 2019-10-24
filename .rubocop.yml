@@ -1,0 +1,69 @@
+require: rubocop-sketchup
+
+AllCops:
+  DisplayCopNames: true
+  SketchUp:
+    TargetSketchUpVersion: 2018
+
+Metrics/AbcSize:
+  Enabled: false
+
+Metrics/CyclomaticComplexity:
+  Enabled: false
+
+Metrics/PerceivedComplexity:
+  Enabled: false
+
+# Aim for 10 lines and less in each methods but accept slightly longer ones.
+Metrics/MethodLength:
+  Max: 20
+
+
+# x, y and z used by SketchUp API.
+Naming/UncommunicativeMethodParamName:
+  AllowedNames:
+    - 'x'
+    - 'y'
+    - 'z'
+    - '_x'
+    - '_y'
+    - '_z'
+
+# Let Git client handle file endings.
+Layout/EndOfLine:
+  Enabled: false
+
+# False positive when there is an empty line between require, using etc and
+# first method.
+Layout/EmptyLinesAroundModuleBody:
+  Enabled: false
+Layout/EmptyLinesAroundClassBody:
+  Enabled: false
+
+Layout/IndentArray:
+  EnforcedStyle: consistent
+Layout/IndentHash:
+  EnforcedStyle: consistent
+
+Style/Documentation:
+  Enabled: true
+
+# Single quotes being faster is hardly measurable and only affects parse time.
+# Enforcing double quotes reduces the times where you need to change them
+# when introducing an interpolation. Use single quotes only if their semantics
+# are needed.
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
+
+SketchupDeprecations:
+  Enabled: true
+
+SketchupPerformance:
+  Enabled: true
+
+# Library, not extension.
+SketchupRequirements:
+  Enabled: false
+
+SketchupSuggestions:
+  Enabled: true
