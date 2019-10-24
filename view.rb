@@ -48,7 +48,7 @@ module View
   def self.fov_h(view = Sketchup.active_model.active_view)
     return view.camera.fov unless view.camera.fov_is_height?
 
-    frustrum_ratio(view.camera.fov, aspect_ratio(view))
+    frustum_ratio(view.camera.fov, aspect_ratio(view))
   end
 
   # Get the vertical field of view.
@@ -60,7 +60,7 @@ module View
   def self.fov_v(view = Sketchup.active_model.active_view)
     return view.camera.fov if view.camera.fov_is_height?
 
-    frustrum_ratio(view.camera.fov, 1 / aspect_ratio(view))
+    frustum_ratio(view.camera.fov, 1 / aspect_ratio(view))
   end
 
   # Get the horizontal field of view.
@@ -71,7 +71,7 @@ module View
   # @return [Float] Angle in degrees.
   def self.full_fov_h(view = Sketchup.active_model.active_view)
     # Cap aspect ratio ratio when bars should not be taken into account.
-    frustrum_ratio(fov_h(view), [1 / aspect_ratio_ratio(view), 1].max)
+    frustum_ratio(fov_h(view), [1 / aspect_ratio_ratio(view), 1].max)
   end
 
   # Get the vertical field of view.
@@ -82,7 +82,7 @@ module View
   # @return [Float] Angle in degrees.
   def self.full_fov_v(view = Sketchup.active_model.active_view)
     # Cap aspect ratio ratio when bars should not be taken into account.
-    frustrum_ratio(fov_v(view), [aspect_ratio_ratio(view), 1].max)
+    frustum_ratio(fov_v(view), [aspect_ratio_ratio(view), 1].max)
   end
 
   # Get the height of a parallel projection camera.
@@ -148,7 +148,7 @@ module View
   def self.set_fov_h(fov, view = Sketchup.active_model.active_view)
     view.camera.fov =
       if view.camera.fov_is_height?
-        frustrum_ratio(fov, 1 / aspect_ratio)
+        frustum_ratio(fov, 1 / aspect_ratio)
       else
         fov
       end
@@ -166,7 +166,7 @@ module View
       if view.camera.fov_is_height?
         fov
       else
-        frustrum_ratio(fov, aspect_ratio)
+        frustum_ratio(fov, aspect_ratio)
       end
   end
 
@@ -179,7 +179,7 @@ module View
   # @return [void]
   def self.set_full_fov_h(fov, view = Sketchup.active_model.active_view)
     # Cap aspect ratio ratio when bars should not be taken into account.
-    set_fov_h(frustrum_ratio(fov, [aspect_ratio_ratio(view), 1].min), view)
+    set_fov_h(frustum_ratio(fov, [aspect_ratio_ratio(view), 1].min), view)
   end
 
   # Set the vertical field of view.
@@ -191,7 +191,7 @@ module View
   # @return [void]
   def self.set_full_fov_v(fov, view = Sketchup.active_model.active_view)
     # Cap aspect ratio ratio when bars should not be taken into account.
-    set_fov_v(frustrum_ratio(fov, [1 / aspect_ratio_ratio(view), 1].min), view)
+    set_fov_v(frustum_ratio(fov, [1 / aspect_ratio_ratio(view), 1].min), view)
   end
 
   # Set the height of a parallel projection camera.
@@ -259,14 +259,14 @@ module View
 
   # Private
 
-  # Utility method for finding one frustrum angle based on the other and the
+  # Utility method for finding one frustum angle based on the other and the
   # ratio between.
   #
   # @param angle [Float] Angle in degrees.
   #
   # @return [Angle] Angle in degrees.
-  def self.frustrum_ratio(angle, ratio)
+  def self.frustum_ratio(angle, ratio)
     Math.atan(Math.tan(angle.degrees / 2) * ratio).radians * 2
   end
-  private_class_method :frustrum_ratio
+  private_class_method :frustum_ratio
 end

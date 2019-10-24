@@ -1,4 +1,4 @@
-require_relative "frustrum.rb"
+require_relative "frustum.rb"
 
 # Position camera to include points or entities.
 module Zoom
@@ -98,7 +98,7 @@ module Zoom
   end
 
   # Find planes with the most extreme point in each direction, perpendicular to
-  # frustrum planes.
+  # frustum planes.
   #
   # @param points [Array<Geom::Point3d>]
   # @param view [Sketchup::View]
@@ -110,7 +110,7 @@ module Zoom
   #   Array<(Geom::Point3d, Geom::Vector3d)>
   #   )]
   def self.extreme_planes(points, view)
-    Frustrum.planes(view).map do |plane|
+    Frustum.planes(view).map do |plane|
       transformation = Geom::Transformation.new(*plane).inverse
       point = points.max_by { |pt| pt.transform(transformation).z }
 
