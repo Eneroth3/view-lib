@@ -1,6 +1,8 @@
 require_relative "frustum.rb"
 
-# Position camera to include points or entities.
+# Position camera to include points or entities. As the camera isn't rotated
+# objects can appear asymmetrically placed in perspective views, especially if
+# reaching deep into the view.
 #
 # In perspective projection this zoom is not identical to SketchUp's native one.
 # This version contains everything within the padding while SketchUp's version
