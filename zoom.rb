@@ -1,6 +1,11 @@
 require_relative "frustum.rb"
 
 # Position camera to include points or entities.
+#
+# In perspective projection this zoom is not identical to SketchUp's native one.
+# This version contains everything within the padding while SketchUp's version
+# lets the far side of an object stick outside of it.
+# https://forums.sketchup.com/t/view-camera-wrapper/107261/6
 module Zoom
   # Position camera to include entities.
   #
