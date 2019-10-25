@@ -52,9 +52,10 @@ module Zoom
     extremes = extreme_planes(points, view, padding)
     extremes.map! { |pl| pl.map { |c| c.transform(transformation.inverse) } }
 
-    grow_factor = 1 / (1 - padding / 50.0)
-    height = (extremes[3][0].y - extremes[2][0].y) * grow_factor
-    width = (extremes[1][0].x - extremes[0][0].x) * grow_factor
+    # Honor padding. Even if included when creating the frustum it is lost
+    # when finding the extreme points.
+    height = (extremes[3][0].y - extremes[2][0].y) / (1 - padding / 50.0)
+    width = (extremes[1][0].x - extremes[0][0].x) / (1 - padding / 50.0)
     eye = Geom::Point3d.new(
       (extremes[0][0].x + extremes[1][0].x) / 2,
       (extremes[2][0].y + extremes[3][0].y) / 2,

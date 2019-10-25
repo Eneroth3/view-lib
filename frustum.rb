@@ -53,13 +53,12 @@ module Frustum
   end
   private_class_method :rotate_vector
 
-  def self.parallel_planes(view, full, _padding)
+  def self.parallel_planes(view, full, padding)
     cam = view.camera
     half_height = (full ? View.full_height(view) : View.height(view)) / 2
     half_width = (full ? View.full_width(view) : View.width(view)) / 2
-    # TODO: Support frustum padding here, and treat parallel and
-    # perspective the same in zoom.
-
+    half_height /= (1 - padding / 50.0)
+    half_width /= (1 - padding / 50.0)
     [
       # xaxis = right.
       [cam.eye.offset(cam.xaxis, -half_width), cam.xaxis.reverse],
