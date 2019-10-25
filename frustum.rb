@@ -59,6 +59,7 @@ module Frustum
     half_width = (full ? View.full_width(view) : View.width(view)) / 2
     half_height /= (1 - padding / 50.0)
     half_width /= (1 - padding / 50.0)
+
     [
       # xaxis = right.
       [cam.eye.offset(cam.xaxis, -half_width), cam.xaxis.reverse],
