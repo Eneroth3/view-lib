@@ -22,6 +22,10 @@ module Zoom
   #   // Zoom selection
   #   Zoom.zoom_entities(Sketchup.active_model.selection)
   #
+  #   // Zoom extents and adapt aspect ratio
+  #   View.reset_aspect_ratio
+  #   View.set_aspect_ratio(Zoom.zoom_entities(Sketchup.active_model.entities, padding: 0))
+  #
   # @return [void]
   def self.zoom_entities(entities, view = Sketchup.active_model.active_view,
                          padding: 2.5)
@@ -69,6 +73,8 @@ module Zoom
 
     view.camera.set(eye, view.camera.direction, view.camera.up)
     set_zoom(view, width, height)
+
+    width / height
   end
   private_class_method :zoom_parallel
 
@@ -97,6 +103,18 @@ module Zoom
     ).transform(transformation)
 
     view.camera.set(eye, view.camera.direction, view.camera.up)
+
+    angle_h = -angle_in_plane(extremes[0][0] - ORIGIN, extremes[1][0] - ORIGIN, Y_AXIS)
+    angle_v = angle_in_plane(extremes[2][0] - ORIGIN, extremes[3][0] - ORIGIN, X_AXIS)
+puts "angle_h: #{angle_h.radians}"
+puts "angle_v: #{angle_v.radians}"
+
+    Math.tan(angle_h) / Math.tan(angle_v)
+
+    ###bb = Geom::BoundingBox.new
+    ###bb.add(extremes.map { |pl| view.screen_coords(pl[0]) })
+
+    ###bb.height / bb.width
   end
   private_class_method :zoom_perspective
 
@@ -148,4 +166,10 @@ module Zoom
     end
   end
   private_class_method :extreme_planes
+
+  # Counter-clockwise angle from vector2 to vector1, as seen from normal.
+  def self.angle_in_plane(vector1, vector2, normal = Z_AXIS)
+    Math.atan2((vector2 * vector1) % normal, vector1 % vector2)
+  end
+  private_class_method :angle_in_plane
 end
