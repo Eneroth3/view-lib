@@ -49,7 +49,7 @@ module Zoom
   def self.zoom_parallel(points, view, padding)
     transformation = camera_space(view)
 
-    extremes = extreme_planes(points, view)
+    extremes = extreme_planes(points, view, padding)
     extremes.map! { |pl| pl.map { |c| c.transform(transformation.inverse) } }
 
     grow_factor = 1 / (1 - padding / 50.0)
@@ -75,11 +75,10 @@ module Zoom
   end
   private_class_method :set_zoom
 
-  def self.zoom_perspective(points, view, _padding)
+  def self.zoom_perspective(points, view, padding)
     transformation = camera_space(view)
 
-    # TODO: Honor padding value!
-    extremes = extreme_planes(points, view)
+    extremes = extreme_planes(points, view, padding)
     extremes.map! { |pl| pl.map { |c| c.transform(transformation.inverse) } }
 
     line_y = Geom.intersect_plane_plane(extremes[0], extremes[1])
@@ -126,6 +125,7 @@ module Zoom
   #
   # @param points [Array<Geom::Point3d>]
   # @param view [Sketchup::View]
+  # @param padding [Numeric]
   #
   # @return [Array<(
   #   Array<(Geom::Point3d, Geom::Vector3d)>,
@@ -133,8 +133,8 @@ module Zoom
   #   Array<(Geom::Point3d, Geom::Vector3d)>,
   #   Array<(Geom::Point3d, Geom::Vector3d)>
   #   )]
-  def self.extreme_planes(points, view)
-    Frustum.planes(view).map do |plane|
+  def self.extreme_planes(points, view, padding)
+    Frustum.planes(view, padding: padding).map do |plane|
       transformation = Geom::Transformation.new(*plane).inverse
       point = points.max_by { |pt| pt.transform(transformation).z }
 

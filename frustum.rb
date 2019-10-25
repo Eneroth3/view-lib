@@ -3,32 +3,14 @@ require_relative "view.rb"
 # Functionality related to the camera frustum.
 module Frustum
   # Get planes for camera frustum.
-  # Planes are including gray bars if an explicit aspect ratio is set.
-  # Order is left, right, bottom and top.
-  #
-  # @param view [Sketchup::View]
-  #
-  # @return [Array<(
-  #   Array<(Geom::Point3d, Geom::Vector3d)>,
-  #   Array<(Geom::Point3d, Geom::Vector3d)>,
-  #   Array<(Geom::Point3d, Geom::Vector3d)>,
-  #   Array<(Geom::Point3d, Geom::Vector3d)>
-  #   )]
-  def self.full_planes(view = Sketchup.active_model.active_view)
-    if view.camera.perspective?
-      perspective_planes(view.camera, View.full_fov_h(view) / 2,
-                         View.full_fov_v(view) / 2)
-    else
-      parallel_planes(view.camera, View.full_height(view) / 2,
-                      View.full_width(view) / 2)
-    end
-  end
-
-  # Get planes for camera frustum.
   # Planes are within gray bars if an explicit aspect ratio is set.
   # Order is left, right, bottom and top.
   #
   # @param view [Sketchup::View]
+  # @param full [Boolean] Whether planes should be including or within gray bars
+  #   if an explicit aspect ratio is set.
+  # @param padding [Numeric] How many percent of frustum should be left blank on
+  #   each side.
   #
   # @return [Array<(
   #   Array<(Geom::Point3d, Geom::Vector3d)>,
@@ -36,18 +18,26 @@ module Frustum
   #   Array<(Geom::Point3d, Geom::Vector3d)>,
   #   Array<(Geom::Point3d, Geom::Vector3d)>
   #   )]
-  def self.planes(view = Sketchup.active_model.active_view)
+  def self.planes(view = Sketchup.active_model.active_view, full: false,
+                  padding: 0)
+    raise ArgumentError, "Padding must be smaller than 50%" if padding >= 50
+
     if view.camera.perspective?
-      perspective_planes(view.camera, View.fov_h(view) / 2,
-                         View.fov_v(view) / 2)
+      perspective_planes(view, full, padding)
     else
-      parallel_planes(view.camera, View.height(view) / 2, View.width(view) / 2)
+      parallel_planes(view, full, padding)
     end
   end
 
   # Private
 
-  def self.perspective_planes(cam, half_fov_h, half_fov_v)
+  def self.perspective_planes(view, full, padding)
+    cam = view.camera
+    half_fov_h = (full ? View.full_fov_h(view) : View.fov_h(view)) / 2
+    half_fov_v = (full ? View.full_fov_v(view) : View.fov_v(view)) / 2
+    half_fov_h *= (1 - padding / 50.0)
+    half_fov_v *= (1 - padding / 50.0)
+
     [
       # xaxis = right.
       [cam.eye, rotate_vector(cam.xaxis.reverse, cam.eye, cam.up, half_fov_h)],
@@ -63,7 +53,13 @@ module Frustum
   end
   private_class_method :rotate_vector
 
-  def self.parallel_planes(cam, half_height, half_width)
+  def self.parallel_planes(view, full, _padding)
+    cam = view.camera
+    half_height = (full ? View.full_height(view) : View.height(view)) / 2
+    half_width = (full ? View.full_width(view) : View.width(view)) / 2
+    # TODO: Support frustum padding here, and treat parallel and
+    # perspective the same in zoom.
+
     [
       # xaxis = right.
       [cam.eye.offset(cam.xaxis, -half_width), cam.xaxis.reverse],
