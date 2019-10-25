@@ -7,6 +7,8 @@ module Zoom
   # @param entities [Array<Sketchup::Drawingelement>], Sketchup::Entities,
   #   Sketchup::Selection, Sketchup::Drawingelement]
   # @param view [Sketchup::View]
+  # @param padding [Numeric] How many percent of view should be left blank on
+  #   each side.
   #
   # @example
   #   // Zoom extents
@@ -16,37 +18,42 @@ module Zoom
   #   Zoom.zoom_entities(Sketchup.active_model.selection)
   #
   # @return [void]
-  def self.zoom_entities(entities, view = Sketchup.active_model.active_view)
+  def self.zoom_entities(entities, view = Sketchup.active_model.active_view,
+                         padding: 2.5)
     entities = [entities] unless entities.respond_to?(:each)
-    zoom_points(points(entities), view)
+    zoom_points(points(entities), view, padding: padding)
   end
 
   # Position camera to include points.
   #
   # @param points [Array<Geom::Point3d>]
   # @param view [Sketchup::View]
+  # @param padding [Numeric] How many percent of view should be left blank on
+  #   each side.
   #
   # @return [void]
-  def self.zoom_points(points, view = Sketchup.active_model.active_view)
+  def self.zoom_points(points, view = Sketchup.active_model.active_view,
+                       padding: 2.5)
     return if points.empty?
 
     if view.camera.perspective?
-      zoom_perspective(points, view)
+      zoom_perspective(points, view, padding)
     else
-      zoom_parallel(points, view)
+      zoom_parallel(points, view, padding)
     end
   end
 
   # Private
 
-  def self.zoom_parallel(points, view)
+  def self.zoom_parallel(points, view, padding)
     transformation = camera_space(view)
 
     extremes = extreme_planes(points, view)
     extremes.map! { |pl| pl.map { |c| c.transform(transformation.inverse) } }
 
-    height = extremes[3][0].y - extremes[2][0].y
-    width = extremes[1][0].x - extremes[0][0].x
+    grow_factor = 1 / (1 - padding / 50.0)
+    height = (extremes[3][0].y - extremes[2][0].y) * grow_factor
+    width = (extremes[1][0].x - extremes[0][0].x) * grow_factor
     eye = Geom::Point3d.new(
       (extremes[0][0].x + extremes[1][0].x) / 2,
       (extremes[2][0].y + extremes[3][0].y) / 2,
@@ -67,9 +74,10 @@ module Zoom
   end
   private_class_method :set_zoom
 
-  def self.zoom_perspective(points, view)
+  def self.zoom_perspective(points, view, _padding)
     transformation = camera_space(view)
 
+    # TODO: Honor padding value!
     extremes = extreme_planes(points, view)
     extremes.map! { |pl| pl.map { |c| c.transform(transformation.inverse) } }
 
