@@ -100,18 +100,17 @@ module Zoom
       line_y[0].x,
       line_x[0].y,
       [line_x[0].z, line_y[0].z].min
-    ).transform(transformation)
-
-    view.camera.set(eye, view.camera.direction, view.camera.up)
-
+    )
     half_angle_h = [
-      -Math.atan(extremes[0][0].x / extremes[0][0].z),
-      Math.atan(extremes[1][0].x / extremes[1][0].z)
+      -Math.atan((extremes[0][0].x - eye.x) / (extremes[0][0].z - eye.z)),
+      Math.atan((extremes[1][0].x - eye.x) / (extremes[1][0].z - eye.z))
     ].max
     half_angle_v = [
-      -Math.atan(extremes[2][0].y / extremes[2][0].z),
-      Math.atan(extremes[3][0].y / extremes[3][0].z)
+      -Math.atan((extremes[2][0].y - eye.y) / (extremes[2][0].z - eye.z)),
+      Math.atan((extremes[3][0].y - eye.y) / (extremes[3][0].z - eye.z))
     ].max
+
+    view.camera.set(eye.transform(transformation), view.camera.direction, view.camera.up)
 
     Math.tan(half_angle_h) / Math.tan(half_angle_v)
   end
