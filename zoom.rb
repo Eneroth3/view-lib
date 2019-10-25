@@ -34,6 +34,7 @@ module Zoom
   # @return [void]
   def self.zoom_points(points, view = Sketchup.active_model.active_view,
                        padding: 2.5)
+    raise ArgumentError, "Padding must be smaller than 50%" if padding >= 50
     return if points.empty?
 
     if view.camera.perspective?
