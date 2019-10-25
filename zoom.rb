@@ -43,7 +43,7 @@ module Zoom
     transformation = camera_space(view)
 
     extremes = extreme_planes(points, view)
-    extremes.each { |p| p.each { |c| c.transform!(transformation.inverse) } }
+    extremes.map! { |pl| pl.map { |c| c.transform(transformation.inverse) } }
 
     height = extremes[3][0].y - extremes[2][0].y
     width = extremes[1][0].x - extremes[0][0].x
@@ -71,7 +71,7 @@ module Zoom
     transformation = camera_space(view)
 
     extremes = extreme_planes(points, view)
-    extremes.each { |p| p.each { |c| c.transform!(transformation.inverse) } }
+    extremes.map! { |pl| pl.map { |c| c.transform(transformation.inverse) } }
 
     line_y = Geom.intersect_plane_plane(extremes[0], extremes[1])
     line_x = Geom.intersect_plane_plane(extremes[2], extremes[3])
