@@ -100,19 +100,16 @@ module Zoom
       line_y[0].x,
       line_x[0].y,
       [line_x[0].z, line_y[0].z].min
-    )
-    half_angle_h = [
-      -Math.atan((extremes[0][0].x - eye.x) / (extremes[0][0].z - eye.z)),
-      Math.atan((extremes[1][0].x - eye.x) / (extremes[1][0].z - eye.z))
-    ].max
-    half_angle_v = [
-      -Math.atan((extremes[2][0].y - eye.y) / (extremes[2][0].z - eye.z)),
-      Math.atan((extremes[3][0].y - eye.y) / (extremes[3][0].z - eye.z))
-    ].max
+    ).transform(transformation)
 
-    view.camera.set(eye.transform(transformation), view.camera.direction, view.camera.up)
+    view.camera.set(eye, view.camera.direction, view.camera.up)
 
-    Math.tan(half_angle_h) / Math.tan(half_angle_v)
+    bb = Geom::BoundingBox.new
+    bb.add(points.map { |pt| view.screen_coords(pt) })
+    width = [(bb.max.x - view.center.x).abs, (bb.min.x - view.center.x).abs].max
+    height = [(bb.max.y - view.center.y).abs, (bb.min.y - view.center.y).abs].max
+
+    width / height
   end
   private_class_method :zoom_perspective
 
