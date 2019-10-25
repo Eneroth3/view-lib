@@ -26,7 +26,7 @@ module Zoom
   #   View.reset_aspect_ratio
   #   View.set_aspect_ratio(Zoom.zoom_entities(Sketchup.active_model.entities, padding: 0))
   #
-  # @return [void]
+  # @return [Float] Aspect ratio.
   def self.zoom_entities(entities, view = Sketchup.active_model.active_view,
                          padding: 2.5)
     entities = [entities] unless entities.respond_to?(:each)
@@ -104,17 +104,16 @@ module Zoom
 
     view.camera.set(eye, view.camera.direction, view.camera.up)
 
-    angle_h = -angle_in_plane(extremes[0][0] - ORIGIN, extremes[1][0] - ORIGIN, Y_AXIS)
-    angle_v = angle_in_plane(extremes[2][0] - ORIGIN, extremes[3][0] - ORIGIN, X_AXIS)
-puts "angle_h: #{angle_h.radians}"
-puts "angle_v: #{angle_v.radians}"
+    half_angle_h = [
+      -Math.atan(extremes[0][0].x / extremes[0][0].z),
+      Math.atan(extremes[1][0].x / extremes[1][0].z)
+    ].max
+    half_angle_v = [
+      -Math.atan(extremes[2][0].y / extremes[2][0].z),
+      Math.atan(extremes[3][0].y / extremes[3][0].z)
+    ].max
 
-    Math.tan(angle_h) / Math.tan(angle_v)
-
-    ###bb = Geom::BoundingBox.new
-    ###bb.add(extremes.map { |pl| view.screen_coords(pl[0]) })
-
-    ###bb.height / bb.width
+    Math.tan(half_angle_h) / Math.tan(half_angle_v)
   end
   private_class_method :zoom_perspective
 
