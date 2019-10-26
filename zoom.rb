@@ -46,7 +46,7 @@ module Zoom
   # @param full [Boolean] Fit content to full view, including gray bars if
   #   aspect ratio is set.
   #
-  # @return [void]
+  # @return [Float] Aspect ratio.
   def self.zoom_points(points, view = Sketchup.active_model.active_view,
                        padding: 2.5, full: false)
     raise ArgumentError, "Padding must be smaller than 50%" if padding >= 50
