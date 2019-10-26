@@ -170,10 +170,4 @@ module Zoom
     end
   end
   private_class_method :extreme_planes
-
-  # Counter-clockwise angle from vector2 to vector1, as seen from normal.
-  def self.angle_in_plane(vector1, vector2, normal = Z_AXIS)
-    Math.atan2((vector2 * vector1) % normal, vector1 % vector2)
-  end
-  private_class_method :angle_in_plane
 end
