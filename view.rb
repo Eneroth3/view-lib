@@ -238,6 +238,26 @@ module View
     set_full_width(width * [1 / aspect_ratio_ratio(view), 1].max, view)
   end
 
+  # Shorthand for setting either view width or view horizontal field of view,
+  # depending on whether parallel or perspective projection is used.
+  #
+  # @param x [Length, Float]
+  #
+  # @return [void]
+  def self.set_x(x, view = Sketchup.active_model.active_view)
+    view.camera.perspective? ? set_fov_h(x, view) : set_width(x, view)
+  end
+
+  # Shorthand for setting either view height or view vertical field of view,
+  # depending on whether parallel or perspective projection is used.
+  #
+  # @param x [Length, Float]
+  #
+  # @return [void]
+  def self.set_y(y, view = Sketchup.active_model.active_view)
+    view.camera.perspective? ? set_fov_v(y, view) : set_height(y, view)
+  end
+
   # Get aspect ratio of viewport.
   #
   # @param view [Sketchup::View]
@@ -255,6 +275,22 @@ module View
   # @return [Length]
   def self.width(view = Sketchup.active_model.active_view)
     (full_width(view) / [1, 1 / aspect_ratio_ratio(view)].max).to_l
+  end
+
+  # Shorthand for getting either view width or view horizontal field of view,
+  # depending on whether parallel or perspective projection is used.
+  #
+  # @return [Length, Float]
+  def self.x(view = Sketchup.active_model.active_view)
+    view.camera.perspective? ? fov_h(view) : width(view)
+  end
+
+  # Shorthand for getting either view height or view vertical field of view,
+  # depending on whether parallel or perspective projection is used.
+  #
+  # @return [Length, Float]
+  def self.y(view = Sketchup.active_model.active_view)
+    view.camera.perspective? ? fov_v(view) : height(view)
   end
 
   # Private
